@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Home Wallet</string>
+    <string name="QuantityPlainText"></string>
+    <string name="quantityLabel">Used Quantity</string>
+    <string name="categoryLabel">Category</string>
+    <string name="enterButtonLabel">Insert</string>
+    <string name="ResultTextView">0</string>
+    <string name="LabelCurrency">￥</string>
+
+
+    <string-array name="categories">
+        <item>Food</item>
+        <item>Leisure</item>
+        <item>Other</item>
+    </string-array>
+</resources>
