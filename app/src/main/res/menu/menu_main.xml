@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/clearAll"
+        android:title="Clear All"></item>
+    <item android:id="@+id/clearCats" android:title="Clear Categories"></item>
+    <item
+        android:id="@+id/goToCats"
+        android:title="Categories"
+        android:background="@color/amarillento"></item>
+    <item
+        android:id="@+id/goToHistory"
+        android:title="History"></item>
+
+</menu>

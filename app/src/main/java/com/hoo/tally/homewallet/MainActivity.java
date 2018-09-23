@@ -1,18 +1,24 @@
 package com.hoo.tally.homewallet;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 //import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.BounceInterpolator;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
@@ -33,10 +40,11 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements categoryDialog.myDialogListener{
 
-    //Database class
+    //Database classes
     MyDBHandler dbHandler;
+    MyCatDBHandler catdbHandler;
 
     //Used for saving logs in the console
     private static final String TAG = "MainActivity";
@@ -48,8 +56,11 @@ public class MainActivity extends AppCompatActivity {
     EditText quantityEditText;
     Spinner categorySpinner;
 
-    //Create empty array we will be used for the item list.
+    //Create empty array that will be used for the item list.
     List<HashMap<String,String>> listItems = new ArrayList<>();
+
+    //ArrayList used to load the spinner.
+    List<String> categoryList = new ArrayList<>();
 
     //This adapter will be used to reflect the changes in the item array
     //into the list view.
@@ -110,6 +121,26 @@ public class MainActivity extends AppCompatActivity {
 
         //Set button into list view
         listView.setMenuCreator(creator);
+
+        //Click and hold category spinner.
+        categorySpinner.setOnLongClickListener(new View.OnLongClickListener(){
+            @Override
+            public boolean onLongClick(View view){
+                Log.i(TAG,"Worked");
+                openDialog();
+                return true;
+            }
+        });
+
+        //When clicking a list item
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+                Toast.makeText(MainActivity.this,listItems.get(position).get("Second Line"),Toast.LENGTH_SHORT).show();     //HERE!!!!!!!!!!!!!!!!!!!!!!!11
+            }
+        });
+
 
 
         //Insert button.
@@ -189,17 +220,18 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
 
-
-
-
-
         });
 
+        //Set category database
+        catdbHandler = new MyCatDBHandler(this,null,null,1);
+
+        //Push category db data into categoryList array.
+        catdbHandler.databaseToArray(categoryList);
 
         //Spinner (drop down list) code.
         //Get category list from strings.xml
         ArrayAdapter<String> myCategoryAdapter = new ArrayAdapter<String>(MainActivity.this,
-                android.R.layout.simple_list_item_1,getResources().getStringArray(R.array.categories));
+                android.R.layout.simple_list_item_1,categoryList);
                 myCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 categorySpinner.setAdapter(myCategoryAdapter);
 
@@ -209,6 +241,7 @@ public class MainActivity extends AppCompatActivity {
         int finalResult = dbHandler.databaseToArray(listItems);
         resultTextView.setText(("" + finalResult));
         theAdapter.notifyDataSetChanged();
+
     }
 
 
@@ -219,16 +252,16 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    //Code for clear all button
+    //MENU BUTTONS.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        //Menu BUtton "clear all".
         if(item.getItemId()==R.id.clearAll){
 
 
             //Clear database table.
             dbHandler.clearTable();
-
-//            listItems.clear();
 
             //Update listItems array with new database info
             int finalResult = dbHandler.databaseToArray(listItems);
@@ -237,6 +270,21 @@ public class MainActivity extends AppCompatActivity {
             resultTextView.setText(("" + finalResult));
             quantityEditText.setText("");
             closeKeyboard();
+
+        //Menu Button "clear categories".
+        }else if(item.getItemId()==R.id.clearCats){
+            catdbHandler.clearTable();
+            //catdbHandler.databaseToArray(categoryList);
+            categorySpinner.setAdapter(null);
+
+        }else if(item.getItemId()==R.id.goToCats){
+            Intent startIntent = new Intent(getApplicationContext(), categoryScreen.class);
+            //startIntent.putExtra("test", "HELLO WORLD!");
+            startActivity(startIntent);
+
+        }else if(item.getItemId()==R.id.goToHistory){
+            Intent goToHistoryIntent = new Intent(getApplicationContext(), historyScreen.class);
+            startActivity(goToHistoryIntent);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -250,4 +298,36 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Code to hide soft keyboard
+    public void showKeyboard(){
+        EditText categoryEditText =findViewById(R.id.edit_category);
+        View view = this.getCurrentFocus();
+        if (view != null){
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(categoryEditText,InputMethodManager.SHOW_IMPLICIT);
+        }
+    }
+
+
+    //Code to display the category popup
+    public void openDialog(){
+        categoryDialog catDialog = new categoryDialog();
+        catDialog.show(getSupportFragmentManager(), "example dialog");
+
+    }
+
+    @Override
+    public void applyCategory(String username) {
+        Categories category = new Categories(username);
+        catdbHandler.addCategory(category);
+        catdbHandler.databaseToArray(categoryList);
+
+        ArrayAdapter<String> myCategoryAdapter = new ArrayAdapter<String>(MainActivity.this,
+                android.R.layout.simple_list_item_1,categoryList);
+        myCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        categorySpinner.setAdapter(myCategoryAdapter);
+
+        categorySpinner.setSelection(myCategoryAdapter.getCount()-1);
+
+    }
 }

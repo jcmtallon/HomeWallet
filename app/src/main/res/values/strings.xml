@@ -6,6 +6,10 @@
     <string name="enterButtonLabel">Insert</string>
     <string name="ResultTextView">0</string>
     <string name="LabelCurrency">￥</string>
+    <string name="acceptButton">Add</string>
+    <string name="deleteButton">Delete</string>
+    <string name="dialogInput">Escribe una categoría aquí.</string>
+    <string name="addCatButton">Add</string>
 
 
     <string-array name="categories">
@@ -13,4 +17,5 @@
         <item>Leisure</item>
         <item>Other</item>
     </string-array>
+    <string name="title_activity_category_screen">categoryScreen</string>
 </resources>
