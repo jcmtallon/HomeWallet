@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".welcomePage">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,12 +20,16 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".MainActivity"
+            android:label="Home Wallet">
+        </activity>
+        <activity
             android:name=".categoryScreen"
-            android:label="@string/title_activity_category_screen">
+            android:label="Category Screen">
         </activity>
         <activity
             android:name=".historyScreen"
-            android:label="historyScreen">
+            android:label="History Screen">
         </activity>
     </application>
 
