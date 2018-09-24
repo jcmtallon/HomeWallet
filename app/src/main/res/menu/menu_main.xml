@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/clearAll"
-        android:title="Clear All"></item>
+        android:title="Save and Clear All"></item>
     <item android:id="@+id/clearCats" android:title="Clear Categories"></item>
     <item
         android:id="@+id/goToCats"

@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements categoryDialog.my
     //Database classes
     MyDBHandler dbHandler;
     MyCatDBHandler catdbHandler;
+    MyHistoryDBHandler historyDB;
 
     //Used for saving logs in the console
     private static final String TAG = "MainActivity";
@@ -153,8 +154,20 @@ public class MainActivity extends AppCompatActivity implements categoryDialog.my
                 //Get quantity and current result values to make calculation
                 String quantity = quantityEditText.getText().toString();
                 String result = resultTextView.getText().toString();
+                int seletedItemOfMySpinner=categorySpinner.getSelectedItemPosition();
+                String actualPositionOfMySpinner = (String) categorySpinner.getItemAtPosition(seletedItemOfMySpinner);
 
-                if(!quantity.isEmpty()) {
+                if(quantity.isEmpty()){
+                    Toast.makeText( MainActivity.this,"Insert a quantity first",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(seletedItemOfMySpinner==-1){
+                    Toast.makeText( MainActivity.this,"Select a category first",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(!quantity.isEmpty() && seletedItemOfMySpinner!=-1) {
 
                     //Get current date and save in currentDate string
                     Calendar calendar = Calendar.getInstance();
@@ -225,6 +238,9 @@ public class MainActivity extends AppCompatActivity implements categoryDialog.my
         //Set category database
         catdbHandler = new MyCatDBHandler(this,null,null,1);
 
+        //Set history database
+        historyDB = new MyHistoryDBHandler(this,null,null,1);
+
         //Push category db data into categoryList array.
         catdbHandler.databaseToArray(categoryList);
 
@@ -258,6 +274,9 @@ public class MainActivity extends AppCompatActivity implements categoryDialog.my
 
         //Menu BUtton "clear all".
         if(item.getItemId()==R.id.clearAll){
+
+            //Migrate data to history database
+            dbHandler.migrateToHistory(historyDB);
 
 
             //Clear database table.
